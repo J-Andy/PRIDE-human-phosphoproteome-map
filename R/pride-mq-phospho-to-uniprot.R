@@ -76,8 +76,7 @@ all_msms <- sty %>%
             Biological_sample = paste(unique(biological_sample), collapse = ";") ,
             Pubmeds = paste(unique(Pubmed), collapse = ";"), 
             Max_search_score_MSMSid_Table = max( Score), 
-            STY_table_score = max(STY_table_score))  %>%
-  mutate(Spectralcounts = ifelse( PXDs == "NA", 0, Spectralcounts))
+            STY_table_score = max(STY_table_score))  # %>% mutate(Spectralcounts = ifelse( PXDs == "NA", 0, Spectralcounts))
 
 # add the most interesting scores, the corresponding datasets in PRIDE, PMIDs if available, etc. 
 out <- sty %>%
