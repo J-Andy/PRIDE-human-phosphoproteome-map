@@ -21,7 +21,7 @@
 ## ---------------------------
 
 # load packages
-packages <- c("RCurl" ,"data.table", "tidyverse")
+packages <- c("RCurl" ,"data.table", "tidyverse", "plyr")
 for(i in packages){
   print(i)
   if(!require(i, character.only = TRUE)){
@@ -51,6 +51,7 @@ msms <- fread(paste("cut -f  1,2,4,6,10,11,35-40,62,66-70,73 ", pridedir, "msms.
 # saveRDS(msms, "msms_annotated.rds")
 # rm(msms)
 # gc()
+# msms <- read_rds("msms_annotated.rds")
 
 # read Phospho (STY)Sites.txt MQ output -- this is where the key phosphosite information is captured
 sty  <- fread(paste(pridedir, "Phospho (STY)Sites.txt", sep = ""), showProgress = FALSE, stringsAsFactors = FALSE)
@@ -92,6 +93,29 @@ out <- sty %>%
   mutate(Modified.sequence = gsub("_", "", Modified.sequence) )
 
 head(out)
+colnames(out)
+
+out.aggregated.by.peptide <-  ddply(out, .(Modified.sequence), summarize, 
+                                    Protein=paste(Protein, collapse=";"), 
+                                    Position=paste(Position, collapse=";"), 
+                                    Amino.acid=paste(Amino.acid, collapse=";"), 
+                                    id=paste(id, collapse=";"),
+                                    Localization.prob=paste(Localization.prob, collapse=";"), 
+                                    PEP=paste(PEP, collapse=";"),
+                                    Proteins=paste(Proteins, collapse=";"), 
+                                    Positions.within.proteins=paste(Positions.within.proteins, collapse=";"),
+                                    Position.in.peptide=paste(Position.in.peptide, collapse=";"),
+                                    Spectralcounts=paste(Spectralcounts, collapse=";"),
+                                    PXDs=paste(PXDs, collapse=";"),
+                                    Biological_sample=paste(Biological_sample, collapse=";"),
+                                    Pubmeds=paste(Pubmeds, collapse=";"),
+                                    Max_search_score_MSMSid_Table=paste(Max_search_score_MSMSid_Table, collapse=";"),
+                                    STY_table_score=paste(STY_table_score, collapse=";")
+                                    
+                                    )
 
 
+#
 write.csv(out, file = "pride-mq-phospho-to-uniprot-out.csv", row.names = FALSE)
+
+write.csv(out.aggregated.by.peptide, file = "pride-mq-phospho-to-uniprot-out-aggregated-by-peptide-seq.csv", row.names = FALSE)
